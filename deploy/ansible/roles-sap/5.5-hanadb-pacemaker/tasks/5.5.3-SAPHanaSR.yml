@@ -197,6 +197,14 @@
         - suschk_hook_check is success
         - ansible_os_family | upper == "SUSE"
 
+    - name:                            "5.5 HANA Pacemaker - Create sudoers file for /etc/sudoers.d/20-saphana for SLES"
+      ansible.builtin.template:
+        src:                           "20-saphana-suse.j2"
+        dest:                          "/etc/sudoers.d/20-saphana"
+        mode:                          "0440"
+        owner:                         root
+        group:                         root
+
     - name:                            "5.5 HANA Pacemaker - Start HANA System on both nodes"
       become_user:                     "{{ db_sid | lower }}adm"
       become:                          true
@@ -302,20 +310,39 @@
                                          2. SAPHanaSR-angi Python Hook:   {{ 'PASSED' if angi_hook_check is success else 'FAILED' }}
                                          3. susChkSrv Python Hook:        {{ 'PASSED' if suschk_hook_check is success else 'FAILED' }}
 
-    - name:                            "HANA HSR: - Check HANA DB Version and register"
-      become_user:                     "{{ db_sid | lower }}adm"
-      become:                          true
-      ansible.builtin.command:         /hana/shared/{{ db_sid | upper }}/HDB{{ db_instance_number }}/HDB version
-      register:                        hdb_version_output
-      changed_when:                    false
+    # Note: The hook code updates automatically through OS updates or package updates.
+    # If you point parameter path to the default /usr/share/SAPHanaSR-angi location,
+    # the Python hook code updates automatically through OS updates or package updates.
+    # HANA uses the hook code updates when it next restarts. With an optional own path
+    # like /hana/shared/myHooks, you can decouple OS updates from the hook version that you use
+    - name:                            "5.5 HANA Pacemaker - Adjust global.ini on each cluster node"
+      ansible.builtin.blockinfile:
+        path:                          /hana/shared/{{ db_sid | upper }}/global/hdb/custom/config/global.ini
+        block: |
+                                       [ha_dr_provider_sushanasr]
+                                       provider = susHanaSR
+                                       path = /usr/share/SAPHanaSR-angi
+                                       execution_order = 1
 
-    - name:                            "Extract SAP HANA version number"
-      ansible.builtin.set_fact:
-        hana_version_str: "{{ hdb_version_output.stdout | regex_search('version:\\s+([\\d\\.]+)', '\\1') | first }}"
+                                       [ha_dr_provider_suschksrv]
+                                       provider = susChkSrv
+                                       path = /usr/share/SAPHanaSR-angi
+                                       execution_order = 3
+                                       action_on_lost = fence
 
-    - name:                            "Assert SAP HANA version is greater than SAP HANA 2.0 SP5"
-      ansible.builtin.assert:
-        that:
-          - hana_version_str is version('2.00.050', '>=')
-        fail_msg:                      "Installed HANA version is not greater than SAP HANA 2.0 SP5"
+                                       [trace]
+                                       ha_dr_sushanasr = info
+                                       ha_dr_saphanasr = info
+      when:
+        - suschk_hook_check is success
+        - ansible_os_family | upper == "SUSE"
+
+    - name:                            "5.5 HANA Pacemaker - Create sudoers file for /etc/sudoers.d/20-saphana for SLES"
+      ansible.builtin.template:
+        src:                           "20-saphana-suse.j2"
+        dest:                          "/etc/sudoers.d/20-saphana"
+        mode:                          "0440"
+        owner:                         root
+        group:                         root
+
 # End of configuration for SAPHanaSR python hook
