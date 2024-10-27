@@ -359,7 +359,6 @@ module "output_files" {
   subnet_cidr_db                              = module.common_infrastructure.subnet_cidr_db
   subnet_cidr_storage                         = module.common_infrastructure.subnet_cidr_storage
 
-
   #########################################################################################
   #  SAP Application information                                                          #
   #########################################################################################
