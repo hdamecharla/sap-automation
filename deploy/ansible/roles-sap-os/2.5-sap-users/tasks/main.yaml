@@ -116,8 +116,7 @@
     # TODO: add user for WebDisp Functionality
     # - { tier: 'WEB',         user: 'webadm',                   uid: '32002',            group: 'sapsys', home: '/home/webadm',                 comment: 'SAP WebDisp Admin' }
   when:
-    - item.tier == "all"
-    - item.tier != "observer"
+    - node_tier != "observer"
 
 
 # Create User assignment for Oracle ASM
