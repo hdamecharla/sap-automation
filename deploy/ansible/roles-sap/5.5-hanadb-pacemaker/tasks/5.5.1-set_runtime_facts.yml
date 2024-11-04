@@ -72,9 +72,9 @@
       changed_when:                    false
 
     - name:                            "5.5 HANA Pacemaker - Extract version components"
+      when:                            hdbversion.rc == 0
       ansible.builtin.set_fact:
         version_string:                "{{ hdbversion.stdout | regex_search('version:\\s+([0-9.]+)', '\\1') | first }}"
-      when:                            hdbversion.rc == 0
 
     - name:                            "5.5 HANA Pacemaker - Parse version numbers"
       ansible.builtin.set_fact:
@@ -93,23 +93,22 @@
         saphanaSR_angi_version:        "{{ ansible_facts.packages['SAPHanaSR-angi'][0].version if 'SAPHanaSR-angi' in ansible_facts.packages else '0.0.0' }}"
 
     - name:                            "5.5 HANA Pacemaker - Install SAPHanaSR package if not installed"
-      community.general.zypper:
-        name:                          "SAPHanaSR>=0.161.1_BF"
-        state:                         present
       when:
         - saphanaSR_version == '0.0.0'
         - not use_hanasr_angi
+      community.general.zypper:
+        name:                          "SAPHanaSR>=0.161.1_BF"
+        state:                         present
 
     - name:                            "5.5 HANA Pacemaker - Install SAPHanaSR-angi package if not installed"
-      community.general.zypper:
-        name:                          SAPHanaSR-angi
-        state:                         present
       when:
         - saphanaSR_angi_version == '0.0.0'
         - use_hanasr_angi
         - distribution_full_id in ['sles_sap15.4', 'sles_sap15.5', 'sles_sap15.6']
+      community.general.zypper:
+        name:                          SAPHanaSR-angi
+        state:                         present
 
-    # old code left here for backwards comaptibility
     - name:                            "5.5 HANA Pacemaker - Capture the Hana DB version"
       ansible.builtin.set_fact:
         hdb_version:                   "{{ hdbversion.stdout_lines.1.split().1 }}"

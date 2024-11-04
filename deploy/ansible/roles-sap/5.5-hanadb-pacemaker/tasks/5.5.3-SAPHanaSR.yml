@@ -54,6 +54,7 @@
 
 # susChkSrv Python Hook Check
 - name:                                "5.5 HANA Pacemaker - Validate susChkSrv Python hook requirements"
+  when:                                ansible_os_family | upper == 'SUSE'
   ansible.builtin.assert:
     that:
       - hana_major_version >= min_hana_version
@@ -65,11 +66,14 @@
                                        - Required: HANA 2.0 SPS 05 or higher (Current: {{ hana_major_version }}.0 SPS {{ hana_sps_level }})
                                        - Required: SAPHanaSR {{ min_saphanaSR_version_suschk }} or higher (Current: {{ saphanaSR_version }})
   register:                            suschk_hook_check
-  when:                                ansible_os_family | upper == 'SUSE'
 
 # SAPHanaSR-angi Python Hook Check
 # currently we do not have any version requirements for SAPHanaSR-angi
 - name:                                "5.5 HANA Pacemaker - Validate SAPHanaSR-angi Python hook requirements"
+  when:
+    - ansible_os_family | upper == 'SUSE'
+    - distribution_full_id in ['sles_sap15.4', 'sles_sap15.5', 'sles_sap15.6']
+    - use_hanasr_angi
   ansible.builtin.assert:
     that:
       - hana_major_version >= min_hana_major_version
@@ -82,17 +86,15 @@
                                          - Required: SLES for SAP Applications 15 SP4, SP5, or SP6 (Current: {{ distribution_full_id }})
                                          - Required: SAPHanaSR-angi, should be installed
   register:                            angi_hook_check
-  when:
-    - ansible_os_family | upper == 'SUSE'
-    - distribution_full_id in ['sles_sap15.4', 'sles_sap15.5', 'sles_sap15.6']
-    - use_hanasr_angi
+
 
 - name:                                "5.5 HANA Pacemaker - Can the SLES distribution be used with SAPHanaSR-angi"
-  ansible.builtin.set_fact:
-    is_certified_for_hanasr_angi:      "{{ distribution_full_id in ['sles_sap15.4', 'sles_sap15.5', 'sles_sap15.6'] | default(false) }}"
   when:
     - ansible_os_family | upper == "SUSE"
     - use_hanasr_angi
+  ansible.builtin.set_fact:
+    is_certified_for_hanasr_angi:      "{{ distribution_full_id in ['sles_sap15.4', 'sles_sap15.5', 'sles_sap15.6'] | default(false) }}"
+
 
 - name:                                HANA 2.0 only - Implement the classic Python system replication hook SAPHanaSR
   when:
@@ -132,6 +134,9 @@
         seconds:                       120
 
     - name:                            "5.5 HANA Pacemaker - copy SAPHanaSR.py (SUSE)"
+      when:
+        - ansible_os_family | upper == "SUSE"
+        - not my_hooks_stat.stat.exists
       ansible.builtin.copy:
         src:                           /usr/share/SAPHanaSR/SAPHanaSR.py
         dest:                          /hana/shared/myHooks/
@@ -139,11 +144,12 @@
         owner:                         root
         group:                         root      # TODO - check the correct group once the python hook package is installed
         mode:                          '0644'
-      when:
-        - ansible_os_family | upper == "SUSE"
-        - not my_hooks_stat.stat.exists
+
 
     - name:                            "5.5 HANA Pacemaker - copy SAPHanaSR.py (RHEL)"
+      when:
+        - ansible_os_family | upper == "REDHAT"
+        - not my_hooks_stat.stat.exists
       ansible.builtin.copy:
         src:                           /usr/share/SAPHanaSR/srHook/SAPHanaSR.py
         dest:                          /hana/shared/myHooks/
@@ -151,9 +157,6 @@
         owner:                         root
         group:                         root      # TODO - check the correct group once the python hook package is installed
         mode:                          '0644'
-      when:
-        - ansible_os_family | upper == "REDHAT"
-        - not my_hooks_stat.stat.exists
 
     - name:                            "5.5 HANA Pacemaker - Change ownership of the directory"
       ansible.builtin.file:
@@ -164,6 +167,8 @@
         group:                         sapsys
 
     - name:                            "5.5 HANA Pacemaker - Adjust global.ini on each cluster node (RHEL)"
+      when:
+        - ansible_os_family | upper == "REDHAT"
       ansible.builtin.blockinfile:
         path:                          /hana/shared/{{ db_sid | upper }}/global/hdb/custom/config/global.ini
         block: |
@@ -181,10 +186,11 @@
                                        [trace]
                                        ha_dr_saphanasr = info
                                        ha_dr_chksrv = info
-      when:
-        - ansible_os_family | upper == "REDHAT"
 
     - name:                            "5.5 HANA Pacemaker - Adjust global.ini on each cluster node (SLES)"
+      when:
+        - suschk_hook_check is success
+        - ansible_os_family | upper == "SUSE"
       ansible.builtin.blockinfile:
         path:                          /hana/shared/{{ db_sid | upper }}/global/hdb/custom/config/global.ini
         block: |
@@ -201,27 +207,24 @@
 
                                        [trace]
                                        ha_dr_saphanasr = info
-      when:
-        - suschk_hook_check is success
-        - ansible_os_family | upper == "SUSE"
 
     - name:                            "5.5 HANA Pacemaker - Create sudoers file 20-saphana for SLES"
+      when:                            ansible_os_family | upper == "SUSE"
       ansible.builtin.template:
         src:                           "20-saphana-suse.j2"
         dest:                          "/etc/sudoers.d/20-saphana"
         mode:                          "0440"
         owner:                         root
         group:                         root
-      when:                            ansible_os_family | upper == "SUSE"
 
     - name:                            "5.5 HANA Pacemaker - Create sudoers file 20-saphana for RHEL"
+      when:                            ansible_os_family | upper == "REDHAT"
       ansible.builtin.template:
         src:                           "20-saphana-rhel.j2"
         dest:                          "/etc/sudoers.d/20-saphana"
         mode:                          "0440"
         owner:                         root
         group:                         root
-      when:                            ansible_os_family | upper == "REDHAT"
 
     - name:                            "5.5 HANA Pacemaker - Start HANA System on both nodes"
       become_user:                     "{{ db_sid | lower }}adm"
@@ -245,6 +248,7 @@
       when:                            inventory_hostname == primary_instance_name
       block:
         - name:                        "5.5 HANA Pacemaker - Verify the hook Installation"
+          when:                        inventory_hostname == primary_instance_name
           become_user:                 "{{ db_sid | lower }}adm"
           become:                      true
           ansible.builtin.shell: |
@@ -257,13 +261,14 @@
           until:                       saphanasr_verification.stdout is search("SOK")
           retries:                     10
           delay:                       30
-          when:                        inventory_hostname == primary_instance_name
+
       rescue:
         - name:                        "5.5 HANA Pacemaker - [Rescue] - Pause to give HANA replication time to stabilize"
           ansible.builtin.pause:
             seconds:                   "{{ rescue_hsr_status_report_wait_in_s }}"
 
         - name:                        "5.5 HANA Pacemaker - [Rescue] - Verify the hook Installation"
+          when:                        inventory_hostname == primary_instance_name
           become_user:                 "{{ db_sid | lower }}adm"
           become:                      true
           ansible.builtin.shell: |
@@ -276,9 +281,10 @@
           until:                       saphanasr_verification.stdout is search("SOK")
           retries:                     10
           delay:                       30
-          when:                        inventory_hostname == primary_instance_name
+
 
     - name:                            "5.5 HANA Pacemaker - Log that the hook script is working as expected"
+      when:                            inventory_hostname == primary_instance_name
       block:
 
         - name:                        "5.5 HANA Pacemaker - Debug (saphanasr_verification)"
@@ -300,7 +306,7 @@
             that:
               - "'SFAIL' != hsr_hook_verify_result"
             fail_msg:                  "Unable to determine if HSR Hook is working"
-      when:                            inventory_hostname == primary_instance_name
+            success_msg:               "HSR Hook is working as expected"
 
     - name:                            "5.5 HANA Pacemaker - Verify the hook Installation"
       ansible.builtin.debug:
@@ -404,13 +410,14 @@
 
       rescue:
         - name:                        "5.5 HANA Pacemaker - Handle HANA System start failure"
+          when:                        hana_system_started.rc not in [0, 3]
           ansible.builtin.fail:
             msg: |
                                        Failed to start SAP system:
                                        Return code: {{ hana_system_started.rc }}
                                        stdout: {{ hana_system_started.stdout }}
                                        stderr: {{ hana_system_started.stderr }}
-          when:                        hana_system_started.rc not in [0, 3]
+
 
     - name:                           "5.5 HANA Pacemaker - Start HANA Database"
       ansible.builtin.import_tasks:   ../../../roles-misc/0.4-helpers/tasks/04.01-start_hana.yml
