@@ -350,6 +350,11 @@
     # /*---------------------------------------------------------------------------8
     #  Decision: We will use the default path /usr/share/SAPHanaSR-angi.
     # /*---------------------------------------------------------------------------8
+    - name:                            '5.5 HANA Pacemaker - Check if "myHooks" file exists in /hana/shared directory'
+      ansible.builtin.stat:
+        path:                          /hana/shared/myHooks
+      register:                        my_hooks_stat
+
     - name:                            "5.5 HANA Pacemaker - Stop HANA System on both nodes"
       become_user:                     "{{ db_sid | lower }}adm"
       become:                          true
@@ -365,6 +370,21 @@
         # host:                          "{{ inventory_hostname }}"
         # port:                          "{{ hana_instance_port }}"
         # state:                         stopped
+
+    # If path is a directory, it is copied recursively. In this case, if path ends with “/”, only inside
+    # contents of that directory are copied to destination. Otherwise, if it does not end with “/”, the
+    # directory itself with all contents is copied. This behavior is similar to the rsync command line tool.
+    - name:                            "5.5 HANA Pacemaker - copy SAPHanaSR.py (SUSE)"
+      when:
+        - ansible_os_family | upper == "SUSE"
+        - not my_hooks_stat.stat.exists
+      ansible.builtin.copy:
+        src:                           /usr/share/SAPHanaSR/
+        dest:                          /hana/shared/myHooks/
+        remote_src:                    true
+        owner:                         root
+        group:                         root      # TODO - check the correct group once the python hook package is installed
+        mode:                          '0644'
 
     - name:                            "5.5 HANA Pacemaker - Adjust global.ini on each cluster node"
       ansible.builtin.blockinfile:
@@ -501,7 +521,7 @@
               susChkSrv:
                 loaded:                "{{ (suschksrv_load.stdout   | default('')) is search('HADR.*load.*susChkSrv') }}"
                 initialized:           "{{ (suschksrv_init.stdout   | default('')) is search('susChkSrv.init') }}"
-                events_found:          "{{ (suschksrv_events.stdout | default('')) is search('(START:|init|load)') }}"
+                events_found:          "{{ (suschksrv_events.stdout | default('')) is search('indexserver started') }}"
 
         # Step 5: Display validation results
         - name:                        "5.5 HANA Pacemaker - Display hook configuration validation results"
@@ -525,18 +545,28 @@
                                          hook_status.susHanaSR.loaded and
                                          hook_status.susHanaSR.initialized and
                                          hook_status.susChkSrv.loaded and
-                                         hook_status.susChkSrv.initialized
+                                         hook_status.susChkSrv.initialized and
+                                         hook_status.susChkSrv.events_found
                                        }}"
 
+        # Step 7: Display overall validation status
         - name:                        "5.5 HANA Pacemaker - Display overall hook configuration status"
           ansible.builtin.debug:
             msg: |
                                        SAPHanaSR-angi Hook Configuration Status: {{ 'PASSED' if hooks_properly_configured else 'FAILED' }}
 
+        - name:                        "5.5 HANA Pacemaker - Assert that the hook configuration is correct"
+          ansible.builtin.assert:
+            that:
+              - hooks_properly_configured
+            fail_msg:                  "Hook configuration is incorrect"
+            success_msg:               "Hook configuration is correct"
+
       rescue:
-        - name:                            "5.5 HANA Pacemaker - Handle hook validation failure"
+        - name:                        "5.5 HANA Pacemaker - Handle hook validation failure"
           ansible.builtin.fail:
             msg: |
-                                          Failed to validate hook configuration:
-                                          {{ ansible_failed_result.msg | default('Unknown error occurred') }}
+                                       Failed to validate hook configuration: {{ ansible_failed_task.name }}
+                                         {{ ansible_failed_result.msg | default('Unknown error occurred') }}
+
 # +------------------------------------4--------------------------------------*/
