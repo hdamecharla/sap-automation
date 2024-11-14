@@ -44,7 +44,7 @@ packages:
     - { tier: 'os',     package: 'lvm2',                                         node_tier: 'all',            state: 'present' }
     - { tier: 'os',     package: 'numad',                                        node_tier: 'all',            state: 'present' }
     - { tier: 'os',     package: 'cifs-utils',                                   node_tier: 'all',            state: 'present' }
-#    - { tier: 'os',     package: 'unar',                                         node_tier: 'scs',           state: 'present' }
+    # - { tier: 'os',     package: 'unar',                                         node_tier: 'scs',           state: 'present' }
     # --------------------------- Begin - Packages required for DB2 -----------------------------------------8
     # https://www.ibm.com/docs/en/db2/11.5?topic=servers-linux
     - { tier: 'os',     package: 'libaio',                                       node_tier: 'db2',            state: 'present' }
@@ -145,7 +145,7 @@ packages:
     - { tier: 'os',     package: 'sg3_utils',                                    node_tier: 'all',            state: 'present' }
     - { tier: 'os',     package: 'sudo',                                         node_tier: 'all',            state: 'present' }
     - { tier: 'os',     package: 'tcsh',                                         node_tier: 'all',            state: 'present' }
-#    - { tier: 'os',     package: 'unar',                                         node_tier: 'scs',            state: 'present' }
+    # - { tier: 'os',     package: 'unar',                                         node_tier: 'scs',            state: 'present' }
     # --------------------------- Begin - Packages required for DB2 -----------------------------------------8
     # https://www.ibm.com/docs/en/db2/11.5?topic=servers-linux
     - { tier: 'os',     package: 'libaio',                                       node_tier: 'db2',            state: 'present' }
@@ -194,13 +194,12 @@ packages:
     - { tier: 'ha',     package: 'resource-agents-sap-hana',                     node_tier: 'hana',           state: 'present' }
     - { tier: 'ha',     package: 'resource-agents-sap',                          node_tier: 'scs',            state: 'present' }
     - { tier: 'ha',     package: 'resource-agents-sap',                          node_tier: 'ers',            state: 'present' }
-  # ------------------------- End - Packages required for Clustering ----------------------------------------8
-  # ------------------------- Begin - Packages required for Start/Stop --------------------------------------8
+    # ------------------------- End - Packages required for Clustering ----------------------------------------8
+    # ------------------------- Begin - Packages required for Start/Stop --------------------------------------8
     - { tier: 'ha',     package: 'sap-cluster-connector',                        node_tier: 'hana',           state: 'present' }
     - { tier: 'ha',     package: 'sap-cluster-connector',                        node_tier: 'scs',            state: 'present' }
     - { tier: 'ha',     package: 'sap-cluster-connector',                        node_tier: 'ers',            state: 'present' }
-
-  # ------------------------- End - Packages required for Start/Stop ----------------------------------------8
+    # ------------------------- End - Packages required for Start/Stop ----------------------------------------8
   redhat9:
     - { tier: 'os',     package: '@base',                                        node_tier: 'all',            state: 'present' }
     - { tier: 'os',     package: 'bind-utils',                                   node_tier: 'all',            state: 'present' }
@@ -223,9 +222,8 @@ packages:
     - { tier: 'os',     package: 'sg3_utils',                                    node_tier: 'all',            state: 'present' }
     - { tier: 'os',     package: 'sudo',                                         node_tier: 'all',            state: 'present' }
     - { tier: 'os',     package: 'tcsh',                                         node_tier: 'all',            state: 'present' }
-#    - { tier: 'os',     package: 'unar',                                         node_tier: 'scs',            state: 'present' }
+    # - { tier: 'os',     package: 'unar',                                         node_tier: 'scs',            state: 'present' }
     - { tier: 'os',     package: 'xfsprogs',                                     node_tier: 'all',            state: 'present' }
-
     # --------------------------- Begin - Packages required for DB2 -----------------------------------------8
     # https://www.ibm.com/docs/en/db2/11.5?topic=servers-linux
     - { tier: 'os',     package: 'libaio',                                       node_tier: 'db2',            state: 'present' }
@@ -468,7 +466,6 @@ packages:
     - { tier: 'ha',     package: 'fence-agents-azure-arm',                       node_tier: 'scs',            state: 'present' }
     - { tier: 'ha',     package: 'fence-agents-azure-arm',                       node_tier: 'ers',            state: 'present' }
     - { tier: 'ha',     package: 'fence-agents-azure-arm',                       node_tier: 'hana',           state: 'present' }
-
   sles_sap15.5:
     #  - { tier: 'os',     package: 'sle-module-public-cloud',                                  state: 'present' }
     - { tier: 'os',     package: 'python3-xml',                                  node_tier: 'all',            state: 'present' }
@@ -549,13 +546,9 @@ packages:
     - { tier: 'os',     package: 'libSM-devel',                                  node_tier: 'all',            state: 'present' }
     - { tier: 'os',     package: 'libICE-devel',                                 node_tier: 'all',            state: 'present' }
     - { tier: 'os',     package: 'tuned-profiles-oracle.noarch',                 node_tier: 'all',            state: 'present' }
-
   oraclelinux8.1:
-
   oraclelinux8.2:
-
   oraclelinux8.3:
-
   oraclelinux8.4:
     - { tier: 'os',     package: 'binutils',                                     node_tier: 'all',            state: 'present' }
     - { tier: 'os',     package: 'libX11-xcb',                                   node_tier: 'all',            state: 'present' }
@@ -569,31 +562,25 @@ packages:
     - { tier: 'os',     package: 'libdmx',                                       node_tier: 'all',            state: 'present' }
     - { tier: 'os',     package: 'libxcrypt-devel',                              node_tier: 'all',            state: 'present' }
     - { tier: 'os',     package: 'lm_sensors-libs',                              node_tier: 'all',            state: 'present' }
-
   oraclelinux8.5:
     - { tier: 'os',     package: 'oracle-database-preinstall-19c',               node_tier: 'all',            state: 'present' }
-
   oraclelinux8.6:
     - { tier: 'os',     package: 'oracle-database-preinstall-19c',               node_tier: 'all',            state: 'present' }
     - { tier: 'os',     package: 'oracleasm-support',                            node_tier: 'oracle-asm',     state: 'present' }
     - { tier: 'os',     package: 'gdisk',                                        node_tier: 'all',            state: 'present' }
-
   oraclelinux8.7:
     - { tier: 'os',     package: 'oracle-database-preinstall-19c',               node_tier: 'all',            state: 'present' }
     - { tier: 'os',     package: 'oracleasm-support',                            node_tier: 'oracle-asm',     state: 'present' }
     - { tier: 'os',     package: 'gdisk',                                        node_tier: 'all',            state: 'present' }
-
   oraclelinux8.8:
     - { tier: 'os',     package: 'oracle-database-preinstall-19c',               node_tier: 'all',            state: 'present' }
     - { tier: 'os',     package: 'oracleasm-support',                            node_tier: 'oracle-asm',     state: 'present' }
     - { tier: 'os',     package: 'gdisk',                                        node_tier: 'all',            state: 'present' }
-
   oraclelinux8.9:
     - { tier: 'os',     package: 'oracle-database-preinstall-19c',               node_tier: 'all',            state: 'present' }
     - { tier: 'os',     package: 'gdisk',                                        node_tier: 'all',            state: 'present' }
-#    - { tier: 'os',     package: 'kmod-oracleasm',                               node_tier: 'oracle-asm',     state: 'present' }
-#    - { tier: 'os',     package: 'oracleasm-support',                            node_tier: 'oracle-asm',     state: 'present' }
-
+    # - { tier: 'os',     package: 'kmod-oracleasm',                               node_tier: 'oracle-asm',     state: 'present' }
+    # - { tier: 'os',     package: 'oracleasm-support',                            node_tier: 'oracle-asm',     state: 'present' }
   oraclelinux8.10:
     - { tier: 'os',     package: 'oracle-database-preinstall-19c',               node_tier: 'all',            state: 'present' }
     - { tier: 'os',     package: 'gdisk',                                        node_tier: 'all',            state: 'present' }
