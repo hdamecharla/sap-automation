@@ -73,7 +73,7 @@
   when:
     - ansible_os_family | upper == 'SUSE'
     - distribution_full_id in ['sles_sap15.4', 'sles_sap15.5', 'sles_sap15.6']
-    - use_hanasr_angi
+    - use_hanasr_angi | default(false)
   ansible.builtin.assert:
     that:
       - hana_major_version >= min_hana_major_version
@@ -91,7 +91,7 @@
 - name:                                "5.5 HANA Pacemaker - Can the SLES distribution be used with SAPHanaSR-angi"
   when:
     - ansible_os_family | upper == "SUSE"
-    - use_hanasr_angi
+    - use_hanasr_angi | default(false)
   ansible.builtin.set_fact:
     is_certified_for_hanasr_angi:      "{{ distribution_full_id in ['sles_sap15.4', 'sles_sap15.5', 'sles_sap15.6'] | default(false) }}"
 
@@ -100,7 +100,7 @@
   when:
     - hana_version_ok
     - basic_hook_check is success
-    - not is_certified_for_hanasr_angi
+    - not is_certified_for_hanasr_angi | default(false)
   block:
     # Print validation summary report for debug
     - name:                            "5.5 HANA Pacemaker - Display validation summary"
@@ -320,7 +320,7 @@
     - basic_hook_check is success
     - suschk_hook_check is success
     - angi_hook_check is success
-    - is_certified_for_hanasr_angi
+    - is_certified_for_hanasr_angi | default(false)
     - ansible_os_family | upper == "SUSE" # redundant, need to remove it later.
   block:
     # Summary Report
@@ -347,9 +347,7 @@
     # HANA uses the hook code updates when it next restarts. With an optional own
     # path like /hana/shared/myHooks, you can decouple OS updates from the hook
     # version that you use
-    # /*---------------------------------------------------------------------------8
-    #  Decision: We will use the default path /usr/share/SAPHanaSR-angi.
-    # /*---------------------------------------------------------------------------8
+    # +------------------------------------4--------------------------------------*/
     - name:                            '5.5 HANA Pacemaker - Check if "myHooks" file exists in /hana/shared directory'
       ansible.builtin.stat:
         path:                          /hana/shared/myHooks
