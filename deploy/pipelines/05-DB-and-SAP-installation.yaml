@@ -264,7 +264,7 @@ stages:
                   export workload_prefix=${az_var}
                 fi
 
-                echo "Workload Prefix:                     ${workload_prefix}"
+                echo "Workload Prefix:                     ${workload_prefix}+++"
 
                 az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query Terraform_Remote_Storage_Subscription.value  --output tsv)
                 if [ -z ${az_var} ]; then
@@ -274,7 +274,7 @@ stages:
                 fi
 
                 echo "Control Plane Subscription:          ${control_plane_subscription}"
-                echo "Workload Prefix:                     ${workload_prefix}"
+                echo "Workload Prefix:                     ${workload_prefix}+++"
 
 
                 if [[ $EXTRA_PARAMETERS = "'${EXTRA_PARAMETERS}'" ]]; then
