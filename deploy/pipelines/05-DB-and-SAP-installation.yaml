@@ -257,7 +257,7 @@ stages:
                 echo "SID:                                 ${SID}"
                 echo "Folder:                              $HOME/SYSTEM/${SAP_SYSTEM_CONFIGURATION_NAME}"
 
-                az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "${NETWORK}"Workload_Secret_Prefix.value  --output tsv)
+                az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query "${NETWORK}"Workload_Secret_Prefix.value --output tsv | awk '{printf "%s", $0}')
                 if [ -z ${az_var} ]; then
                   export workload_prefix=$(cat "${environment_file_name}"  | grep workload_zone_prefix      | awk -F'=' '{print $2}' | xargs)
                 else
@@ -266,7 +266,7 @@ stages:
 
                 echo "Workload Prefix:                     ${workload_prefix}+++"
 
-                az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query Terraform_Remote_Storage_Subscription.value  --output tsv)
+                az_var=$(az pipelines variable-group variable list --group-id ${VARIABLE_GROUP_ID} --query Terraform_Remote_Storage_Subscription.value --output tsv | awk '{printf "%s", $0}')
                 if [ -z ${az_var} ]; then
                   export control_plane_subscription=$(cat "${environment_file_name}"  | grep STATE_SUBSCRIPTION      | awk -F'=' '{print $2}' | xargs)
                 else
