@@ -47,6 +47,11 @@
   vars:
     ansible_python_interpreter:        "{{ python_version }}"
 
+- name:                                "1.7 chrony: - Show package facts"
+  ansible.builtin.debug:
+    var:                               ansible_facts.packages
+    verbosity:                         2
+
 # The ntp package should have been uninstalled during the execution
 # of the 1.4-packages role.
 - name:                                "1.7 chrony: - Fail if ntp still installed"
