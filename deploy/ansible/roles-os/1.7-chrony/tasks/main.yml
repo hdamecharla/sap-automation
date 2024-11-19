@@ -33,7 +33,7 @@
 
 - name:                                "1.7 chrony: - Debug Python version"
   ansible.builtin.debug:
-    msg:                               "{{ lookup('pipe', python_verion ~ ' --version') }}"
+    msg:                               "{{ lookup('pipe', ansible_python_interpreter ~ ' --version') }}"
   vars:
     ansible_python_interpreter:        "{{ python_version }}"
 
