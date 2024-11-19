@@ -51,6 +51,8 @@
   ansible.builtin.debug:
     var:                               ansible_facts.packages
     verbosity:                         2
+  vars:
+    ansible_python_interpreter:        "{{ python_version }}"
 
 # The ntp package should have been uninstalled during the execution
 # of the 1.4-packages role.
