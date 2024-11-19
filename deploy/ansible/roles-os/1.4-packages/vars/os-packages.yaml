@@ -482,9 +482,10 @@ packages:
   sles_sap15.6:
     #  - { tier: 'os',     package: 'sle-module-public-cloud',                                  state: 'present' }
     - { tier: 'os',     package: 'python3-xml',                                  node_tier: 'all',            state: 'present' }
+    - { tier: 'os',     package: 'python3-rpm',                                  node_tier: 'all',            state: 'present' }
     #  SLES15 SP4 has removed python 2, no python2-rpm package. Additionally, python-xml is now part of
     # python-base and referenced as python3-xml
-    - { tier: 'db2',   package: 'system-user-bin',                              node_tier: 'db2',             state: 'present' }
+    - { tier: 'db2',    package: 'system-user-bin',                              node_tier: 'db2',             state: 'present' }
     - { tier: 'ha',     package: 'sapstartsrv-resource-agents',                  node_tier: 'scs',            state: 'present' }
     - { tier: 'ha',     package: 'sapstartsrv-resource-agents',                  node_tier: 'ers',            state: 'present' }
     # These package cause issues on SLES15 SP5 due to changes to the public cloud SDKs
