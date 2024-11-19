@@ -31,6 +31,16 @@
     python_version:                    "python3.11"
   when: (ansible_distribution | lower ~ ansible_distribution_version) in ['sles_sap15.6']
 
+# workaround for https://github.com/ansible/ansible/issues/82068#issuecomment-2123567229
+- name:                                "1.7 chrony: - Ensure rpm bindings for python is available for {{ python_version }}"
+  ansible.builtin.pip:
+    name:                              python3-rpm
+    state:                             present
+  vars:
+    ansible_python_interpreter:        "{{ python_version }}"
+  tags:
+    - always
+
 # TODO: This should probably be moved into the 1.4-packages role
 - name:                                "1.7 chrony: - Collect facts about installed packages"
   ansible.builtin.package_facts:
