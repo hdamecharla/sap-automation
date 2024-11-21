@@ -185,13 +185,13 @@
 
     - name:                            "1.17 Generic Pacemaker - Enable Stonith"
       ansible.builtin.shell: |
-                                       crm configure property stonith-enabled=true
+                                       crm configure property stonith-enabled=true;
                                        crm configure property concurrent-fencing=true
       register:                        crm_configure_result
       failed_when:                     crm_configure_result.rc > 1
 
     - name:                            "1.17 Generic Pacemaker - Create Azure Fencing Agent"
-      ansible.builtin.shell:   >
+      ansible.builtin.shell: |
                                        crm configure primitive rsc_st_azure stonith:fence_azure_arm params \
                                        subscriptionId="{{ fencing_spn_subscription_id }}" \
                                        resourceGroup="{{ resource_group_name }}" \
@@ -210,7 +210,7 @@
       failed_when:                     crm_configure_result.rc > 1
 
     - name:                            "1.17 Generic Pacemaker - Create Azure Fencing Agent (MSI)"
-      ansible.builtin.shell:   >
+      ansible.builtin.shell: |
                                        crm configure primitive rsc_st_azure stonith:fence_azure_arm params \
                                        subscriptionId="{{ fencing_spn_subscription_id }}" \
                                        resourceGroup="{{ resource_group_name }}" \
