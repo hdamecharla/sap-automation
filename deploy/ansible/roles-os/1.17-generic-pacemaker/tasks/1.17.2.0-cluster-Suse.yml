@@ -200,6 +200,7 @@
                                        op monitor interval=3600 timeout=120
       when:
         - not use_msi_for_clusters or distribution_full_id in ["sles_sap12.4"]
+      register:                        crm_configure_result
       failed_when:                     crm_configure_result.rc > 1
 
     - name:                            "1.17 Generic Pacemaker - Create Azure Fencing Agent (MSI)"
@@ -215,6 +216,7 @@
                                        pcmk_delay_max=15 \
                                        pcmk_host_map="{{ primary_instance_name }}:{{ hostvars[primary_instance_name]['primary_vm_name'] }};{{ secondary_instance_name }}:{{ hostvars[secondary_instance_name]['secondary_vm_name'] }}" \
                                        op monitor interval=3600 timeout=120
+      register:                        crm_configure_result
       failed_when:                     crm_configure_result.rc > 1
       when:
         - use_msi_for_clusters
@@ -224,6 +226,7 @@
     - name:                            "1.17 Generic Pacemaker - Stonith Timeout Property"
       become:                          true
       ansible.builtin.shell:           crm configure property stonith-timeout=900
+      register:                        crm_configure_result
       failed_when:                     crm_configure_result.rc > 1
 
     - name:                            "1.17 Generic Pacemaker - Enable Stonith"
