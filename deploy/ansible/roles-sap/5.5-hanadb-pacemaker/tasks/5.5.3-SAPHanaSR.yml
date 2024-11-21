@@ -9,19 +9,19 @@
 # +------------------------------------4--------------------------------------*/
 # Note: Refer to https://access.redhat.com/articles/3004101 for RHEL hook installation for HSR ( scale up and scale out ) setups
 
-- name:                            "5.5 HANA Pacemaker - Display version numbers"
+- name:                                "5.5 HANA Pacemaker - Display version numbers"
   ansible.builtin.debug:
     msg:
-      - "hana_major_version:                 {{ hana_major_version }}"
-      - "hana_minor_version:                 {{ hana_minor_version }}"
-      - "hana_sps_level:                     {{ hana_sps_level }}"
+                                       - "hana_major_version:                 {{ hana_major_version }}"
+                                       - "hana_minor_version:                 {{ hana_minor_version }}"
+                                       - "hana_sps_level:                     {{ hana_sps_level }}"
 
 - name:                                "5.5 HANA Pacemaker - Check SAP HANA version requirements"
   ansible.builtin.assert:
     that:
-      - hana_major_version == min_hana_major_version
-      - hana_minor_version >= min_hana_minor_version
-      - hana_sps_level >= min_hana_sps_level
+      - "hana_major_version is version(min_hana_major_version, '>=')"
+      - "hana_minor_version is version(min_hana_minor_version, '>=')"
+      - "hana_sps_level is version(min_hana_sps_level, '>=')"
     success_msg: |
                                        HANA version {{ hana_major_version }}.{{ hana_minor_version }} SPS{{ hana_sps_level }}
                                        meets minimum requirement of {{ min_hana_major_version }}.{{ min_hana_minor_version }} SPS{{ min_hana_sps_level }}
@@ -50,8 +50,8 @@
 - name:                                "5.5 HANA Pacemaker - Validate basic SAPHanaSR Python hook requirements"
   ansible.builtin.assert:
     that:
-      - hana_major_version >= min_hana_major_version
-      - saphanaSR_version is version(min_saphanaSR_version, '>=')
+      - "hana_major_version is version(min_hana_major_version, '>=')"
+      - "saphanaSR_version is version(min_saphanaSR_version, '>=')"
     success_msg:                       "Basic SAPHanaSR Python hook requirements met"
     fail_msg: |
                                        Basic SAPHanaSR Python hook requirements not met:
@@ -64,9 +64,9 @@
   when:                                ansible_os_family | upper == 'SUSE'
   ansible.builtin.assert:
     that:
-      - hana_major_version >= min_hana_version
-      - hana_sps_level >= min_hana_sps_for_angi
-      - saphanaSR_version is version(min_saphanaSR_version_suschk, '>=')
+      - "hana_major_version is version(min_hana_major_version, '>=')"
+      - "hana_sps_level is version(min_hana_sps_level, '>=')"
+      - "saphanaSR_version is version(min_saphanaSR_version_suschk, '>=')"
     success_msg:                       "susChkSrv Python hook requirements met"
     fail_msg: |
                                        susChkSrv Python hook requirements not met:
@@ -83,9 +83,9 @@
     - use_hanasr_angi | default(false)
   ansible.builtin.assert:
     that:
-      - hana_major_version >= min_hana_major_version
-      - hana_sps_level >= min_hana_sps_level
-      - saphanaSR_angi_version is version('0.0.0', '>')
+      - "hana_major_version is version(min_hana_major_version, '>=')"
+      - "hana_sps_level is version(min_hana_sps_level, '>=')"
+      - "saphanaSR_angi_version is version('0.0.0', '>')"
     success_msg:                       "SAPHanaSR-angi Python hook requirements met"
     fail_msg: |
                                        SAPHanaSR-angi Python hook requirements not met:
