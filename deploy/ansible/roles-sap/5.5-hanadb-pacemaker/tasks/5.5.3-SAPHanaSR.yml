@@ -16,6 +16,13 @@
                                        - "hana_minor_version:                 {{ hana_minor_version }}"
                                        - "hana_sps_level:                     {{ hana_sps_level }}"
 
+- name:                                "5.5 HANA Pacemaker - Can the SLES distribution be used with SAPHanaSR-angi"
+  when:
+    - ansible_os_family | upper == "SUSE"
+    - use_hanasr_angi | default(false)
+  ansible.builtin.set_fact:
+    is_certified_for_hanasr_angi:      "{{ distribution_full_id in ['sles_sap15.4', 'sles_sap15.5', 'sles_sap15.6'] | default(false) }}"
+
 - name:                                "5.5 HANA Pacemaker - Check SAP HANA version requirements"
   ansible.builtin.assert:
     that:
@@ -46,6 +53,9 @@
 
 # Basic SAPHanaSR Python Hook Check
 - name:                                "5.5 HANA Pacemaker - Validate basic SAPHanaSR Python hook requirements"
+  when:
+                                       - hana_version_ok
+                                       - not is_certified_for_hanasr_angi | default(false)
   ansible.builtin.assert:
     that:
       - "hana_major_version is version(min_hana_major_version, '>=')"
@@ -59,7 +69,10 @@
 
 # susChkSrv Python Hook Check
 - name:                                "5.5 HANA Pacemaker - Validate susChkSrv Python hook requirements"
-  when:                                ansible_os_family | upper == 'SUSE'
+  when:
+                                       - hana_version_ok
+                                       - not is_certified_for_hanasr_angi | default(false)
+                                       - ansible_os_family | upper == 'SUSE'
   ansible.builtin.assert:
     that:
       - "hana_major_version is version(min_hana_major_version, '>=')"
@@ -77,7 +90,7 @@
 - name:                                "5.5 HANA Pacemaker - Validate SAPHanaSR-angi Python hook requirements"
   when:
     - ansible_os_family | upper == 'SUSE'
-    - distribution_full_id in ['sles_sap15.4', 'sles_sap15.5', 'sles_sap15.6']
+    - is_certified_for_hanasr_angi | default(false)
     - use_hanasr_angi | default(false)
   ansible.builtin.assert:
     that:
@@ -91,14 +104,6 @@
                                          - Required: SLES for SAP Applications 15 SP4, SP5, or SP6 (Current: {{ distribution_full_id }})
                                          - Required: SAPHanaSR-angi, should be installed
   register:                            angi_hook_check
-
-
-- name:                                "5.5 HANA Pacemaker - Can the SLES distribution be used with SAPHanaSR-angi"
-  when:
-    - ansible_os_family | upper == "SUSE"
-    - use_hanasr_angi | default(false)
-  ansible.builtin.set_fact:
-    is_certified_for_hanasr_angi:      "{{ distribution_full_id in ['sles_sap15.4', 'sles_sap15.5', 'sles_sap15.6'] | default(false) }}"
 
 
 - name:                                HANA 2.0 only - Implement the classic Python system replication hook SAPHanaSR
