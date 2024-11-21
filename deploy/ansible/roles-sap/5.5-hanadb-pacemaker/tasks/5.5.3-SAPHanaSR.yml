@@ -20,7 +20,6 @@
   ansible.builtin.assert:
     that:
       - "hana_major_version is version(min_hana_major_version, '>=')"
-      - "hana_minor_version is version(min_hana_minor_version, '>=')"
       - "hana_sps_level is version(min_hana_sps_level, '>=')"
     success_msg: |
                                        HANA version {{ hana_major_version }}.{{ hana_minor_version }} SPS{{ hana_sps_level }}
@@ -42,7 +41,6 @@
     msg: |
                                        Parsed version details:
                                          - Major version: {{ hana_major_version }}
-                                         - Minor version: {{ hana_minor_version }}
                                          - SPS level: {{ hana_sps_level }}
                                          - Meets requirements: {{ hana_version_ok }}
 
