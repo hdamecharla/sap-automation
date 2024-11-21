@@ -100,14 +100,25 @@
         name:                          "SAPHanaSR>=0.161.1_BF"
         state:                         present
 
-    - name:                            "5.5 HANA Pacemaker - Install SAPHanaSR-angi package if not installed"
+    - name:                            "5.5 HANA Pacemaker - Uninstall the old-style packages before we install SAPHanaSR-angi"
       when:
         - saphanaSR_angi_version == '0.0.0'
         - use_hanasr_angi
         - distribution_full_id in ['sles_sap15.4', 'sles_sap15.5', 'sles_sap15.6']
-      community.general.zypper:
-        name:                          SAPHanaSR-angi
-        state:                         present
+      block:
+        - name:                        "5.5 HANA Pacemaker - Uninstall the old-style SAPHanaSR package"
+          community.general.zypper:
+            name:
+                                       - SAPHanaSR
+                                       - SAPHanaSR-doc
+            state:                     absent
+            disable_recommends:        true
+
+        - name:                        "5.5 HANA Pacemaker - Install SAPHanaSR-angi package if not installed"
+          community.general.zypper:
+            name:                      SAPHanaSR-angi
+            state:                     present
+            update_cache:              true
 
     - name:                            "5.5 HANA Pacemaker - Capture the Hana DB version"
       ansible.builtin.set_fact:
