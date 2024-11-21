@@ -9,6 +9,13 @@
 # +------------------------------------4--------------------------------------*/
 # Note: Refer to https://access.redhat.com/articles/3004101 for RHEL hook installation for HSR ( scale up and scale out ) setups
 
+- name:                            "5.5 HANA Pacemaker - Display version numbers"
+  ansible.builtin.debug:
+    msg:
+      - "hana_major_version:                 {{ hana_major_version }}"
+      - "hana_minor_version:                 {{ hana_minor_version }}"
+      - "hana_sps_level:                     {{ hana_sps_level }}"
+
 - name:                                "5.5 HANA Pacemaker - Check SAP HANA version requirements"
   ansible.builtin.assert:
     that:
