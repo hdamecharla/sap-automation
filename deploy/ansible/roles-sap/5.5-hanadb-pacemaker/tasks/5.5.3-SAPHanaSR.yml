@@ -387,7 +387,7 @@
         - ansible_os_family | upper == "SUSE"
         - not my_hooks_stat.stat.exists
       ansible.builtin.copy:
-        src:                           /usr/share/SAPHanaSR/
+        src:                           /usr/share/SAPHanaSR-angi/
         dest:                          /hana/shared/myHooks/
         remote_src:                    true
         owner:                         root
