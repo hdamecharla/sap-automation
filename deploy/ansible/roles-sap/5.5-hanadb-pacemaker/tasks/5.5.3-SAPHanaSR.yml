@@ -386,12 +386,13 @@
       when:
         - ansible_os_family | upper == "SUSE"
         - not my_hooks_stat.stat.exists
+      become:                          true
       ansible.builtin.copy:
         src:                           /usr/share/SAPHanaSR-angi/
         dest:                          /hana/shared/myHooks/
         remote_src:                    true
-        owner:                         root
-        group:                         root      # TODO - check the correct group once the python hook package is installed
+        owner:                         "{{ db_sid | lower }}adm"
+        group:                         sapsys      # TODO - check the correct group once the python hook package is installed
         mode:                          '0644'
 
     - name:                            "5.5 HANA Pacemaker - Adjust global.ini on each cluster node"
@@ -400,12 +401,12 @@
         block: |
                                        [ha_dr_provider_sushanasr]
                                        provider = susHanaSR
-                                       path = /usr/share/SAPHanaSR-angi
+                                       path = /hana/shared/myHooks
                                        execution_order = 1
 
                                        [ha_dr_provider_suschksrv]
                                        provider = susChkSrv
-                                       path = /usr/share/SAPHanaSR-angi
+                                       path = /hana/shared/myHooks
                                        execution_order = 3
                                        action_on_lost = fence
 
@@ -457,9 +458,9 @@
     - name:                            "5.5 HANA Pacemaker - Validate SAPHanaSR-angi Hook Configuration"
       when:                            inventory_hostname == primary_instance_name
       block:
-        # Step 1: Change to trace directory
+        # Step 1: Change to trace directory - /usr/sap/<SID>/HDB<instance>/<inventory_hostname>/trace
         - name:                        "5.5 HANA Pacemaker - Get trace directory path"
-          ansible.builtin.command:     "cdtrace"
+          ansible.builtin.shell:       cdtrace
           become:                      true
           become_user:                 "{{ db_sid | lower }}adm"
           register:                    cdtrace_result
