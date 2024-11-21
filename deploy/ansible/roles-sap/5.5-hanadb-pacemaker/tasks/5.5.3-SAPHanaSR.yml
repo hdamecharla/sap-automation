@@ -500,7 +500,7 @@
         - name:                        "5.5 HANA Pacemaker - Check susChkSrv events"
           ansible.builtin.shell: >
                                        set -o pipefail
-                                       egrep '(LOST:|STOP:|START:|DOWN:|init|load|fail)' nameserver_suschksrv.trc"
+                                       egrep '(LOST:|STOP:|START:|DOWN:|init|load|fail)' nameserver_suschksrv.trc
           args:
             chdir:                     "{{ cdtrace_result.stdout }}"
           become:                      true
