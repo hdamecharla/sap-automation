@@ -301,12 +301,8 @@
                                        params SID="{{ db_sid | upper }}" InstanceNumber="{{ db_instance_number }}"
       register:                        sap_hana_topology
       failed_when: >-
-                                       "{{ sap_hana_topology
-                                           | selectattr('rc', 'ne', 0)
-                                           | rejectattr('stderr', 'search', 'Cannot create primitive with ID.*Found existing primitive with same ID')
-                                           | default([])
-                                           | list | length > 0
-                                       }}"
+                                       sap_hana_topology.rc != 0 and
+                                       not (sap_hana_topology.stderr is search("Cannot create primitive with ID.*Found existing primitive with same ID"))
 
     - name:                            "5.5.4.1 HANA Pacemaker configuration - Configure SAPHanaTopology clone resource [SAPHanaSR-angi]"
       ansible.builtin.command: >
@@ -315,12 +311,8 @@
                                        meta clone-node-max="1" interleave="true"
       register:                        sap_hana_topology_cln
       failed_when: >-
-                                       "{{ sap_hana_topology_cln
-                                           | selectattr('rc', 'ne', 0)
-                                           | rejectattr('stderr', 'search', 'Cannot create clone with ID.*Found existing primitive with same ID')
-                                           | default([])
-                                           | list | length > 0
-                                       }}"
+                                       sap_hana_topology_cln.rc != 0 and
+                                       not (sap_hana_topology_cln.stderr is search("Cannot create clone with ID.*Found existing clone with same ID"))
 
     - name:                            "5.5.4.1 HANA Pacemaker configuration - Configure SAPHanaController resource [SAPHanaSR-angi]"
       ansible.builtin.command: >
@@ -336,12 +328,8 @@
                                        meta priority=100
       register:                        sap_hana_controller
       failed_when: >-
-                                       "{{ sap_hana_controller
-                                           | selectattr('rc', 'ne', 0)
-                                           | rejectattr('stderr', 'search', 'Cannot create primitive with ID.*Found existing primitive with same ID')
-                                           | default([])
-                                           | list | length > 0
-                                       }}"
+                                       sap_hana_controller.rc != 0 and
+                                       not (sap_hana_controller.stderr is search("Cannot create primitive with ID.*Found existing primitive with same ID"))
 
     - name:                            "5.5.4.1 HANA Pacemaker configuration - Configure SAPHanaController clone resource [SAPHanaSR-angi]"
       ansible.builtin.command: >
@@ -349,12 +337,8 @@
                                        meta clone-node-max="1" interleave="true" promotable="true"
       register:                        sap_hana_controller_cln
       failed_when: >-
-                                       "{{ sap_hana_controller_cln
-                                           | selectattr('rc', 'ne', 0)
-                                           | rejectattr('stderr', 'search', 'Cannot create clone with ID.*Found existing primitive with same ID')
-                                           | default([])
-                                           | list | length > 0
-                                       }}"
+                                       sap_hana_controller_cln.rc != 0 and
+                                       not (sap_hana_controller_cln.stderr is search("Cannot create clone with ID.*Found existing clone with same ID"))
 
     - name:                            "5.5.4.1 HANA Pacemaker configuration - Configure SAPHanaFilesystem resource [SAPHanaSR-angi]"
       ansible.builtin.command: >
@@ -365,12 +349,8 @@
                                        params SID="{{ db_sid | upper }}" InstanceNumber="{{ db_instance_number }}" ON_FAIL_ACTION="fence"
       register:                        sap_hana_filesystem
       failed_when: >-
-                                       "{{ sap_hana_filesystem
-                                           | selectattr('rc', 'ne', 0)
-                                           | rejectattr('stderr', 'search', 'Cannot create primitive with ID.*Found existing primitive with same ID')
-                                           | default([])
-                                           | list | length > 0
-                                       }}"
+                                       sap_hana_filesystem.rc != 0 and
+                                       not (sap_hana_filesystem.stderr is search("Cannot create primitive with ID.*Found existing primitive with same ID"))
 
     - name:                            "5.5.4.1 HANA Pacemaker configuration - Configure SAPHanaFilesystem clone resource [SAPHanaSR-angi]"
       ansible.builtin.command: >
@@ -378,12 +358,8 @@
                                        meta clone-node-max="1" interleave="true"
       register:                        sap_hana_filesystem_cln
       failed_when: >-
-                                       "{{ sap_hana_filesystem_cln
-                                           | selectattr('rc', 'ne', 0)
-                                           | rejectattr('stderr', 'search', 'Cannot create clone with ID.*Found existing primitive with same ID')
-                                           | default([])
-                                           | list | length > 0
-                                       }}"
+                                       sap_hana_filesystem_cln.rc != 0 and
+                                       not (sap_hana_filesystem_cln.stderr is search("Cannot create clone with ID.*Found existing clone with same ID"))
 
     - name:                            "5.5.4.1 HANA Pacemaker configuration - Configure Virtual IP resource [SAPHanaSR-angi]"
       ansible.builtin.command: >
@@ -393,12 +369,8 @@
                                        params ip="{{ database_loadbalancer_ip }}"
       register:                        sap_hana_rsc_ip
       failed_when: >-
-                                       "{{ sap_hana_rsc_ip
-                                           | selectattr('rc', 'ne', 0)
-                                           | rejectattr('stderr', 'search', 'Cannot create primitive with ID.*Found existing primitive with same ID')
-                                           | default([])
-                                           | list | length > 0
-                                       }}"
+                                       sap_hana_rsc_ip.rc != 0 and
+                                       not (sap_hana_rsc_ip.stderr is search("Cannot create primitive with ID.*Found existing primitive with same ID"))
 
     - name:                            "5.5.4.1 HANA Pacemaker configuration - Configure azure-lb resource agent [SAPHanaSR-angi]"
       ansible.builtin.command: >
@@ -407,12 +379,8 @@
                                        meta resource-stickiness=0
       register:                        sap_hana_nc_ip
       failed_when: >-
-                                       "{{ sap_hana_nc_ip
-                                           | selectattr('rc', 'ne', 0)
-                                           | rejectattr('stderr', 'search', 'Cannot create primitive with ID.*Found existing primitive with same ID')
-                                           | default([])
-                                           | list | length > 0
-                                       }}"
+                                       sap_hana_nc_ip.rc != 0 and
+                                       not (sap_hana_nc_ip.stderr is search("Cannot create primitive with ID.*Found existing primitive with same ID"))
 
     - name:                            "5.5.4.1 HANA Pacemaker configuration - Configure Group IP Address resource [SAPHanaSR-angi]"
       ansible.builtin.command: >
@@ -421,12 +389,8 @@
                                        rsc_nc_{{ db_sid | upper }}_HDB{{ db_instance_number }}
       register:                        sap_hana_g_ip
       failed_when: >-
-                                       "{{ sap_hana_g_ip
-                                           | selectattr('rc', 'ne', 0)
-                                           | rejectattr('stderr', 'search', 'Cannot create group with ID.*Found existing group with same ID')
-                                           | default([])
-                                           | list | length > 0
-                                       }}"
+                                       sap_hana_g_ip.rc != 0 and
+                                       not (sap_hana_g_ip.stderr is search("Cannot create group with ID.*Found existing group with same ID"))
 
     - name:                            "5.5.4.1 HANA Pacemaker configuration - Configure Co-Location constraint [SAPHanaSR-angi]"
       ansible.builtin.command: >
@@ -435,12 +399,8 @@
                                        mst_SAPHanaCon_{{ db_sid | upper }}_HDB{{ db_instance_number }}:Promoted
       register:                        sap_hana_g_col_ip
       failed_when: >-
-                                       "{{ sap_hana_g_col_ip
-                                           | selectattr('rc', 'ne', 0)
-                                           | rejectattr('stderr', 'search', 'Cannot create colocation with ID.*Found existing colocation with same ID')
-                                           | default([])
-                                           | list | length > 0
-                                       }}"
+                                       sap_hana_g_col_ip.rc != 0 and
+                                       not (sap_hana_g_col_ip.stderr is search("Cannot create colocation with ID.*Found existing colocation with same ID"))
 
     - name:                            "5.5.4.1 HANA Pacemaker configuration - Configure Resource order [SAPHanaSR-angi]"
       ansible.builtin.command: >
@@ -449,12 +409,8 @@
                                        mst_SAPHanaCon_{{ db_sid | upper }}_HDB{{ db_instance_number }}
       register:                        sap_hana_ord_ip
       failed_when: >-
-                                       "{{ sap_hana_ord_ip
-                                           | selectattr('rc', 'ne', 0)
-                                           | rejectattr('stderr', 'search', 'Cannot create order with ID.*Found existing order with same ID')
-                                           | default([])
-                                           | list | length > 0
-                                       }}"
+                                       sap_hana_ord_ip.rc != 0 and
+                                       not (sap_hana_ord_ip.stderr is search("Cannot create order with ID.*Found existing order with same ID"))
 
     - name:                            "5.5.4.1 HANA Pacemaker configuration - Clean up HANA resources if required [SAPHanaSR-angi]"
       ansible.builtin.command: >
