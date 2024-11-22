@@ -17,7 +17,7 @@
     use_proxy:                         false
     headers:
       Metadata:                        true
-  register: hanavmmetadata
+  register:                            hanavmmetadata
 
 - name:                                "5.5 HANA Pacemaker - Show IMDS results"
   ansible.builtin.debug:
@@ -78,9 +78,9 @@
 
     - name:                            "5.5 HANA Pacemaker - Parse version numbers"
       ansible.builtin.set_fact:
-        hana_major_version:                 "{{ version_string.split('.')[0] | int }}"
-        hana_minor_version:                 "{{ version_string.split('.')[1] | int }}"
-        hana_sps_level:                     "{{ version_string.split('.')[2] | int }}"
+        hana_major_version:            "{{ version_string.split('.')[0] | int }}"
+        hana_minor_version:            "{{ version_string.split('.')[1] | int }}"
+        hana_sps_level:                "{{ version_string.split('.')[2] | int }}"
 
     # Get SAPHanaSR Version using package_facts
     - name:                            "5.5 HANA Pacemaker - Get installed package facts"
