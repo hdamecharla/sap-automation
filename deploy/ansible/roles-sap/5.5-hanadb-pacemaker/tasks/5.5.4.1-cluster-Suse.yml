@@ -301,7 +301,7 @@
                                        params SID="{{ db_sid | upper }}" InstanceNumber="{{ db_instance_number }}"
       register:                        sap_hana_topology
       failed_when: >-
-                                       "{{ sap_hana_topology.results
+                                       "{{ sap_hana_topology
                                            | selectattr('rc', 'ne', 0)
                                            | rejectattr('stderr', 'search', 'Cannot create primitive with ID.*Found existing primitive with same ID')
                                            | default([])
@@ -315,7 +315,7 @@
                                        meta clone-node-max="1" interleave="true"
       register:                        sap_hana_topology_cln
       failed_when: >-
-                                       "{{ sap_hana_topology.results
+                                       "{{ sap_hana_topology_cln
                                            | selectattr('rc', 'ne', 0)
                                            | rejectattr('stderr', 'search', 'Cannot create clone with ID.*Found existing primitive with same ID')
                                            | default([])
@@ -336,7 +336,7 @@
                                        meta priority=100
       register:                        sap_hana_controller
       failed_when: >-
-                                       "{{ sap_hana_controller.results
+                                       "{{ sap_hana_controller
                                            | selectattr('rc', 'ne', 0)
                                            | rejectattr('stderr', 'search', 'Cannot create primitive with ID.*Found existing primitive with same ID')
                                            | default([])
@@ -349,7 +349,7 @@
                                        meta clone-node-max="1" interleave="true" promotable="true"
       register:                        sap_hana_controller_cln
       failed_when: >-
-                                       "{{ sap_hana_controller_cln.results
+                                       "{{ sap_hana_controller_cln
                                            | selectattr('rc', 'ne', 0)
                                            | rejectattr('stderr', 'search', 'Cannot create clone with ID.*Found existing primitive with same ID')
                                            | default([])
@@ -365,7 +365,7 @@
                                        params SID="{{ db_sid | upper }}" InstanceNumber="{{ db_instance_number }}" ON_FAIL_ACTION="fence"
       register:                        sap_hana_filesystem
       failed_when: >-
-                                       "{{ sap_hana_filesystem.results
+                                       "{{ sap_hana_filesystem
                                            | selectattr('rc', 'ne', 0)
                                            | rejectattr('stderr', 'search', 'Cannot create primitive with ID.*Found existing primitive with same ID')
                                            | default([])
@@ -378,7 +378,7 @@
                                        meta clone-node-max="1" interleave="true"
       register:                        sap_hana_filesystem_cln
       failed_when: >-
-                                       "{{ sap_hana_filesystem_cln.results
+                                       "{{ sap_hana_filesystem_cln
                                            | selectattr('rc', 'ne', 0)
                                            | rejectattr('stderr', 'search', 'Cannot create clone with ID.*Found existing primitive with same ID')
                                            | default([])
@@ -393,7 +393,7 @@
                                        params ip="{{ database_loadbalancer_ip }}"
       register:                        sap_hana_rsc_ip
       failed_when: >-
-                                       "{{ sap_hana_rsc_ip.results
+                                       "{{ sap_hana_rsc_ip
                                            | selectattr('rc', 'ne', 0)
                                            | rejectattr('stderr', 'search', 'Cannot create primitive with ID.*Found existing primitive with same ID')
                                            | default([])
@@ -407,7 +407,7 @@
                                        meta resource-stickiness=0
       register:                        sap_hana_nc_ip
       failed_when: >-
-                                       "{{ sap_hana_nc_ip.results
+                                       "{{ sap_hana_nc_ip
                                            | selectattr('rc', 'ne', 0)
                                            | rejectattr('stderr', 'search', 'Cannot create primitive with ID.*Found existing primitive with same ID')
                                            | default([])
@@ -421,7 +421,7 @@
                                        rsc_nc_{{ db_sid | upper }}_HDB{{ db_instance_number }}
       register:                        sap_hana_g_ip
       failed_when: >-
-                                       "{{ sap_hana_g_ip.results
+                                       "{{ sap_hana_g_ip
                                            | selectattr('rc', 'ne', 0)
                                            | rejectattr('stderr', 'search', 'Cannot create group with ID.*Found existing group with same ID')
                                            | default([])
@@ -435,7 +435,7 @@
                                        mst_SAPHanaCon_{{ db_sid | upper }}_HDB{{ db_instance_number }}:Promoted
       register:                        sap_hana_g_col_ip
       failed_when: >-
-                                       "{{ sap_hana_g_col_ip.results
+                                       "{{ sap_hana_g_col_ip
                                            | selectattr('rc', 'ne', 0)
                                            | rejectattr('stderr', 'search', 'Cannot create colocation with ID.*Found existing colocation with same ID')
                                            | default([])
@@ -449,7 +449,7 @@
                                        mst_SAPHanaCon_{{ db_sid | upper }}_HDB{{ db_instance_number }}
       register:                        sap_hana_ord_ip
       failed_when: >-
-                                       "{{ sap_hana_ord_ip.results
+                                       "{{ sap_hana_ord_ip
                                            | selectattr('rc', 'ne', 0)
                                            | rejectattr('stderr', 'search', 'Cannot create order with ID.*Found existing order with same ID')
                                            | default([])
