@@ -120,6 +120,16 @@
             state:                     present
             update_cache:              true
 
+        # update package facts and recheck the version for SAPHanaSR-angi and SAPHanaSR
+        - name:                        "5.5 HANA Pacemaker - Get installed package facts"
+          ansible.builtin.package_facts:
+            manager:                   rpm
+
+        - name:                        "5.5 HANA Pacemaker - Get SAPHanaSR package version"
+          ansible.builtin.set_fact:
+            saphanaSR_version:         "{{ ansible_facts.packages['SAPHanaSR'][0].version if 'SAPHanaSR' in ansible_facts.packages else '0.0.0' }}"
+            saphanaSR_angi_version:    "{{ ansible_facts.packages['SAPHanaSR-angi'][0].version if 'SAPHanaSR-angi' in ansible_facts.packages else '0.0.0' }}"
+
     - name:                            "5.5 HANA Pacemaker - Capture the Hana DB version"
       ansible.builtin.set_fact:
         hdb_version:                   "{{ hdbversion.stdout_lines.1.split().1 }}"

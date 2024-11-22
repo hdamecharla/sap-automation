@@ -9,12 +9,14 @@
 # +------------------------------------4--------------------------------------*/
 # Note: Refer to https://access.redhat.com/articles/3004101 for RHEL hook installation for HSR ( scale up and scale out ) setups
 
-- name:                                "5.5 HANA Pacemaker - Display version numbers"
+- name:                                "5.5 HANA Pacemaker - Display version numbers and package facts"
   ansible.builtin.debug:
-    msg:
+    msg: |
                                        - "hana_major_version:                 {{ hana_major_version }}"
                                        - "hana_minor_version:                 {{ hana_minor_version }}"
                                        - "hana_sps_level:                     {{ hana_sps_level }}"
+                                       - "saphanaSR_version:                  {{ saphanaSR_version }}"
+                                       - "saphanaSR_angi_version:             {{ saphanaSR_angi_version }}"
 
 - name:                                "5.5 HANA Pacemaker - Can the SLES distribution be used with SAPHanaSR-angi"
   when:
