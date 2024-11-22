@@ -462,17 +462,14 @@
       block:
         # Step 1: Change to trace directory - /usr/sap/<SID>/HDB<instance>/<inventory_hostname>/trace
         - name:                        "5.5 HANA Pacemaker - Get trace directory path"
-          ansible.builtin.shell:       cdtrace && pwd
-          become:                      true
-          become_user:                 "{{ db_sid | lower }}adm"
-          register:                    cdtrace_result
-          changed_when:                false
+          ansible.builtin.set_fact:
+            cdtrace:                   "/usr/sap/{{ db_sid | upper }}/HDB{{ db_instance_number }}/{{ hostvars[primary_instance_name]['virtual_host'] }}/trace"
 
         # Step 2: Check SAPHanaSR-angi configuration
         - name:                        "5.5 HANA Pacemaker - Check SAPHanaSR-angi load status"
           ansible.builtin.shell:       "grep 'HADR.*load.*susHanaSR' nameserver_*.trc"
           args:
-            chdir:                     "{{ cdtrace_result.stdout }}"
+            chdir:                     "{{ cdtrace }}"
           become:                      true
           become_user:                 "{{ db_sid | lower }}adm"
           register:                    sushanasr_load
@@ -482,7 +479,7 @@
         - name:                        "5.5 HANA Pacemaker - Check SAPHanaSR-angi initialization"
           ansible.builtin.shell:       "grep 'susHanaSR.init' nameserver_*.trc"
           args:
-            chdir:                     "{{ cdtrace_result.stdout }}"
+            chdir:                     "{{ cdtrace }}"
           become:                      true
           become_user:                 "{{ db_sid | lower }}adm"
           register:                    sushanasr_init
@@ -493,7 +490,7 @@
         - name:                        "5.5 HANA Pacemaker - Check susChkSrv.py load status"
           ansible.builtin.shell:       "grep 'HADR.*load.*susChkSrv' nameserver_*.trc"
           args:
-            chdir:                     "{{ cdtrace_result.stdout }}"
+            chdir:                     "{{ cdtrace }}"
           become:                      true
           become_user:                 "{{ db_sid | lower }}adm"
           register:                    suschksrv_load
@@ -503,7 +500,7 @@
         - name:                        "5.5 HANA Pacemaker - Check susChkSrv.py initialization"
           ansible.builtin.shell:       "grep 'susChkSrv.init' nameserver_*.trc"
           args:
-            chdir:                     "{{ cdtrace_result.stdout }}"
+            chdir:                     "{{ cdtrace }}"
           become:                      true
           become_user:                 "{{ db_sid | lower }}adm"
           register:                    suschksrv_init
@@ -515,7 +512,7 @@
                                        set -o pipefail
                                        egrep '(LOST:|STOP:|START:|DOWN:|init|load|fail)' nameserver_suschksrv.trc
           args:
-            chdir:                     "{{ cdtrace_result.stdout }}"
+            chdir:                     "{{ cdtrace }}"
           become:                      true
           become_user:                 "{{ db_sid | lower }}adm"
           register:                    suschksrv_events
@@ -532,7 +529,7 @@
               susChkSrv:
                 loaded:                "{{ (suschksrv_load.stdout   | default('')) is search('HADR.*load.*susChkSrv') }}"
                 initialized:           "{{ (suschksrv_init.stdout   | default('')) is search('susChkSrv.init') }}"
-                events_found:          "{{ (suschksrv_events.stdout | default('')) is search('indexserver started') }}"
+                events_found:          "{{ (suschksrv_events.stdout | default('')) is search('START:.*graceful .*(indexserver started)') }}"
 
         # Step 5: Display validation results
         - name:                        "5.5 HANA Pacemaker - Display hook configuration validation results"
