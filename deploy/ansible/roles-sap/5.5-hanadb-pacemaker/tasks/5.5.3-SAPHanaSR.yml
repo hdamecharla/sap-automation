@@ -462,7 +462,7 @@
       block:
         # Step 1: Change to trace directory - /usr/sap/<SID>/HDB<instance>/<inventory_hostname>/trace
         - name:                        "5.5 HANA Pacemaker - Get trace directory path"
-          ansible.builtin.shell:       cdtrace
+          ansible.builtin.shell:       cdtrace && pwd
           become:                      true
           become_user:                 "{{ db_sid | lower }}adm"
           register:                    cdtrace_result
