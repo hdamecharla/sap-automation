@@ -278,7 +278,9 @@
 
 # SAPHanaSR-angi configuration
 - name:                                "5.5.4.1 HANA Pacemaker configuration - Configure SAPHanaSR-angi resources"
-  when:                                is_certified_for_hanasr_angi
+  when:
+                                       - is_certified_for_hanasr_angi
+                                       - inventory_hostname == primary_instance_name
   block:
     - name:                            "5.5.4.1 HANA Pacemaker configuration - Get the cluster maintenance mode status [SAPHanaSR-angi]"
       ansible.builtin.shell:           crm configure get_property maintenance-mode
@@ -289,8 +291,8 @@
     - name:                            "5.5.4.1 HANA Pacemaker configuration - Set the cluster maintenance mode if not already in maintenance mode [SAPHanaSR-angi]"
       ansible.builtin.shell:           crm configure property maintenance-mode=true
       when: >-
-        get_status_maintenance_mode.stdout is not search('true') or
-        get_status_maintenance_mode.stdout is search('false')
+                                       get_status_maintenance_mode.stdout is not search('true') or
+                                       get_status_maintenance_mode.stdout is search('false')
 
     - name:                            "5.5.4.1 HANA Pacemaker configuration - Configure SAPHanaTopology resource [SAPHanaSR-angi]"
       ansible.builtin.command: >
